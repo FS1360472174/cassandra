@@ -54,7 +54,13 @@ public class OffsetAwareConfigurationLoader extends YamlConfigurationLoader
 
         config.commitlog_directory += File.pathSeparator + offset;
         config.saved_caches_directory += File.pathSeparator + offset;
+<<<<<<< HEAD
         config.hints_directory += File.pathSeparator + offset;
+=======
+        if(config.archive_data_file_directories != null)
+            for (int i = 0; i < config.archive_data_file_directories.length; i++)
+                config.archive_data_file_directories[i] += File.pathSeparator + offset;
+>>>>>>> cc0ab8f733eef63ed0eaea30cc6f471b467c3ec5
         for (int i = 0; i < config.data_file_directories.length; i++)
             config.data_file_directories[i] += File.pathSeparator + offset;
 
