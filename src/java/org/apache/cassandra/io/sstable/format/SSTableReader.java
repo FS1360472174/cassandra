@@ -20,6 +20,8 @@ package org.apache.cassandra.io.sstable.format;
 import java.io.*;
 import java.lang.ref.WeakReference;
 import java.nio.ByteBuffer;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -1719,7 +1721,32 @@ public abstract class SSTableReader extends SSTable implements SelfRefCounted<SS
     {
         return maxDataAge > age;
     }
-
+    public void createSoftLinks(final String movePath) {
+        for (final Component component : this.components) {
+            final File source = new File(this.descriptor.filenameFor(component));
+            final Path target = new File(movePath, source.getName()).toPath();
+            final Path link = source.toPath();
+            try {
+                Files.createSymbolicLink(link, target);
+            }
+            catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+    
+    public void moveFiles(final String moveDirectoryPath) {
+        for (final Component component : this.components) {
+            final File sourceFile = new File(this.descriptor.filenameFor(component));
+            final File targetFile = new File(moveDirectoryPath, sourceFile.getName());
+            try {
+                Files.move(sourceFile.toPath(), targetFile.toPath());
+            }
+            catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
     public void createLinks(String snapshotDirectoryPath)
     {
         for (Component component : components)
